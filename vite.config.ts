@@ -27,9 +27,11 @@ export default defineConfig({
       },
 
       workbox: {
-        globPatterns: ['client/**/*.{js,css,ico,png,svg,wav,webp,woff,woff2}'],
+        globPatterns: ['client/**/*.{js,css,ico,png,svg,wav,webp}'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         cleanupOutdatedCaches: true,
         clientsClaim: true,
+        skipWaiting: true,
       },
 
       devOptions: {
