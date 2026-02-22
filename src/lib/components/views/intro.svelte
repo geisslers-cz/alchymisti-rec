@@ -19,7 +19,7 @@
 </p>
 
 <div class="flex flex-col items-center gap-2">
-  <Button variant={['border', 'bg']} {onclick} disabled={initialising}>
+  <Button {onclick} disabled={initialising}>
     {initialising ? 'Inicializuji...' : 'Pokračovat'}
   </Button>
 </div>

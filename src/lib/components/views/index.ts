@@ -1,4 +1,3 @@
-export { default as Aborted } from './aborted.svelte';
 export { default as Done } from './done.svelte';
 export { default as Intro } from './intro.svelte';
 export { default as Ready } from './ready.svelte';

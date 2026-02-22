@@ -6,18 +6,18 @@ export enum RecordingStep {
   Ready = 'ready',
   Recording = 'recording',
   Done = 'done',
-  Aborted = 'aborted',
 }
 
 export class RecordingState {
   public readonly recordingTime: number;
+  public readonly introStartTime?: number;
 
   private step: RecordingStep = $state(RecordingStep.Intro);
   private initialised: boolean = false;
   private beep?: AudioBuffer;
   private intro?: AudioBuffer;
-  private recordingStart: number = 0;
-  private introStart?: number;
+  private recordingStart: number = $state(0);
+  private introStart?: number = $state();
   private tmr?: number;
   private frame?: symbol = $state();
   private nowPlaying: Map<AudioBufferSourceNode, number> = new Map();
@@ -27,20 +27,19 @@ export class RecordingState {
 
   constructor() {
     this.recordingTime = $derived(touch(this.ctx.currentTime - this.recordingStart, this.frame));
+    this.introStartTime = $derived(
+      this.introStart !== undefined ? this.introStart - this.recordingStart : undefined,
+    );
   }
 
   get currentStep(): RecordingStep {
     return this.step;
   }
 
-  get timeSinceIntro(): number | undefined {
-    if (this.introStart === undefined) {
-      touch(this.frame);
-      return undefined;
-    }
-
-    const introDuration = this.intro ? this.intro.length / this.intro.sampleRate : 0;
-    return this.recordingTime - this.introStart + introDuration;
+  get timeSinceIntroEnd(): number {
+    return this.intro && this.introStartTime
+      ? this.recordingTime - (this.introStartTime + this.intro.length / this.intro.sampleRate)
+      : 0;
   }
 
   async begin(): Promise<void> {
@@ -118,17 +117,8 @@ export class RecordingState {
     this.step = RecordingStep.Done;
   }
 
-  abort(): void {
-    if (this.step !== RecordingStep.Recording) {
-      return;
-    }
-
-    this.stopRecording();
-    this.step = RecordingStep.Aborted;
-  }
-
   restart(): void {
-    if (this.step !== RecordingStep.Aborted && this.step !== RecordingStep.Done) {
+    if (this.step !== RecordingStep.Done) {
       return;
     }
 

@@ -1,5 +1,4 @@
 export function formatTime(t: number): [string, string] {
-  t = Math.round(t * 1000);
   const sgn = t < 0 ? '-' : '';
   const m = Math.abs(Math.trunc(t / 60_000));
   t = Math.abs(t) - m * 60_000;
