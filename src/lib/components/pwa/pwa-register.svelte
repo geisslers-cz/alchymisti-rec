@@ -24,6 +24,7 @@
 
       if (response.status === 200) {
         await registration?.update();
+        location.reload();
       }
     } catch {
       // noop
