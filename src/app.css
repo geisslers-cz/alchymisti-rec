@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+
+body {
+  @apply bg-neutral-700 text-neutral-50 overflow-hidden flex flex-col min-h-screen;
+}

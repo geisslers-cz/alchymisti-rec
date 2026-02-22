@@ -1,0 +1,46 @@
+name: ci
+
+on:
+  - push
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          cache: true
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run code quality checks
+        run: |
+          pnpm lint
+          pnpm check
+      - name: Build site
+        run: pnpm build
+        env:
+          BASE_PATH: /alchymisti-rec
+      - name: Configure pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
+      - name: Deploy to GitHub
+        id: deployment
+        uses: actions/deploy-pages@v4
